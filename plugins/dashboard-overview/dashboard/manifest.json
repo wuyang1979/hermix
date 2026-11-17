@@ -1,0 +1,14 @@
+{
+  "name": "dashboard-overview",
+  "label": "总览",
+  "description": "Dashboard 总览仪表盘 — 系统状态、Agent 健康、平台连接全景视图",
+  "icon": "Activity",
+  "version": "2.0.0",
+  "tab": {
+    "path": "/dashboard-overview",
+    "position": "start"
+  },
+  "slots": [],
+  "entry": "dist/index.js?v=7",
+  "api": "plugin_api.py"
+}

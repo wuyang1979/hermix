@@ -1,0 +1,14 @@
+{
+  "name": "workflow-manager",
+  "label": "工作流",
+  "description": "工作流可视化 — 展示所有定时任务、自动化工作流的状态和执行历史",
+  "icon": "Workflow",
+  "version": "2.1.0",
+  "tab": {
+    "path": "/workflow-manager",
+    "position": "after:agent-manager"
+  },
+  "slots": [],
+  "entry": "dist/index-v2.js",
+  "api": "plugin_api.py"
+}

@@ -1,0 +1,6 @@
+{
+  "deepseek-v4-flash": {"prompt": 0.5, "completion": 1.0, "currency": "CNY", "unit": "per_1M_tokens"},
+  "deepseek-v4-pro": {"prompt": 2.0, "completion": 8.0, "currency": "CNY", "unit": "per_1M_tokens"},
+  "claude-sonnet-4": {"prompt": 21.0, "completion": 105.0, "currency": "CNY", "unit": "per_1M_tokens"},
+  "anthropic/claude-sonnet-4": {"prompt": 21.0, "completion": 105.0, "currency": "CNY", "unit": "per_1M_tokens"}
+}

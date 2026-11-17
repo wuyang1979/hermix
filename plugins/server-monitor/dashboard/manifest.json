@@ -1,0 +1,14 @@
+{
+  "name": "server-monitor",
+  "label": "服务器监控",
+  "description": "实时服务器监控 — CPU、内存、硬盘使用率与异常告警",
+  "icon": "Activity",
+  "version": "2.0.0",
+  "tab": {
+    "path": "/server-monitor",
+    "position": "after:agent-manager"
+  },
+  "slots": [],
+  "entry": "dist/index.js?v=5",
+  "api": "plugin_api.py"
+}

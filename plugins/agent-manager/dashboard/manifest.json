@@ -1,0 +1,14 @@
+{
+  "name": "agent-manager",
+  "label": "Agent管理",
+  "description": "Agent管理器 — 综合管理套件：Agent管理、CRON定时任务、技能管理、知识库管理",
+  "icon": "Cpu",
+  "version": "2.4.1",
+  "tab": {
+    "path": "/agent-manager",
+    "position": "after:agents"
+  },
+  "slots": [],
+  "entry": "dist/index-v3.js",
+  "api": "plugin_api.py"
+}

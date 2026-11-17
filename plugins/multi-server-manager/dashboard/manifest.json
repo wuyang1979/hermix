@@ -1,0 +1,14 @@
+{
+  "name": "multi-server-manager",
+  "label": "远程服务器",
+  "description": "多服务器管理面板 — 通过SSH管理多台远程Hermes Agent服务器，一键部署、启动、监控Dashboard",
+  "icon": "Server",
+  "version": "4.0.0",
+  "tab": {
+    "path": "/multi-server",
+    "position": "after:server-monitor"
+  },
+  "slots": [],
+  "entry": "dist/index.js?v=26",
+  "api": "plugin_api.py"
+}
