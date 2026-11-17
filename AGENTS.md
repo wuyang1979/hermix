@@ -1,3 +1,8 @@
+> **本仓库说明**：以下开发指南来自上游 Hermes Agent（MIT），适用于内核部分。
+> 本项目在 `web/`、`plugins/` 有大量修改，相关约定见 [NOTICE](NOTICE) 与 [README](README.md)。
+
+---
+
 # Hermes Agent - Development Guide
 
 Instructions for AI coding assistants and developers working on the hermes-agent codebase.

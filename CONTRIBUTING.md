@@ -1,3 +1,14 @@
+> **关于本仓库**：本项目的内核来自 [Hermes Agent](https://github.com/NousResearch/hermes-agent)（MIT）。
+> 下面这份贡献指南原样保留自上游，绝大部分流程仍然适用。
+>
+> **两处不同**：
+> - 提 PR 到**本仓库**，不是上游仓库
+> - 涉及上游内核的改进，欢迎同时向上游提 PR —— 那样受益的人更多
+>
+> 我们的修改范围见 [NOTICE](NOTICE)。
+
+---
+
 # Contributing to Hermes Agent
 
 Thank you for contributing to Hermes Agent! This guide covers everything you need: setting up your dev environment, understanding the architecture, deciding what to build, and getting your PR merged.

@@ -1,84 +1,90 @@
-# Hermes Agent Security Policy
+# 安全策略
 
-This document outlines the security protocols, trust model, and deployment hardening guidelines for the **Hermes Agent** project.
+## 报告漏洞
 
-## 1. Vulnerability Reporting
+**请勿开公开 issue。**
 
-Hermes Agent does **not** operate a bug bounty program. Security issues should be reported via [GitHub Security Advisories (GHSA)](https://github.com/NousResearch/hermes-agent/security/advisories/new) or by emailing **security@nousresearch.com**. Do not open public issues for security vulnerabilities.
+发现安全问题，用 GitHub 的私密报告通道：
 
-### Required Submission Details
-- **Title & Severity:** Concise description and CVSS score/rating.
-- **Affected Component:** Exact file path and line range (e.g., `tools/approval.py:120-145`).
-- **Environment:** Output of `hermes version`, commit SHA, OS, and Python version.
-- **Reproduction:** Step-by-step Proof-of-Concept (PoC) against `main` or the latest release.
-- **Impact:** Explanation of what trust boundary was crossed.
+```
+https://github.com/wuyang1979/hermix/security/advisories/new
+```
 
----
+报告里请写清：
 
-## 2. Trust Model
+- 受影响的版本 / commit
+- 复现步骤
+- 影响范围（能读到什么、能执行什么）
+- 你建议的修复方向（可选）
 
-The core assumption is that Hermes is a **personal agent** with one trusted operator.
+**我们会回复**。但请注意：这是个人维护的开源项目，没有专职安全团队，也没有漏洞赏金。响应时间不承诺 SLA。
 
-### Operator & Session Trust
-- **Single Tenant:** The system protects the operator from LLM actions, not from malicious co-tenants. Multi-user isolation must happen at the OS/host level.
-- **Gateway Security:** Authorized callers (Telegram, Discord, Slack, etc.) receive equal trust. Session keys are used for routing, not as authorization boundaries.
-- **Execution:** Defaults to `terminal.backend: local` (direct host execution). Container isolation (Docker, Modal, Daytona) is opt-in for sandboxing.
+## 上游内核的问题
 
-### Dangerous Command Approval
-The approval system (`tools/approval.py`) is a core security boundary. Terminal commands, file operations, and other potentially destructive actions are gated behind explicit user confirmation before execution. The approval mode is configurable via `approvals.mode` in `config.yaml`:
-- `"on"` (default) — prompts the user to approve dangerous commands.
-- `"auto"` — auto-approves after a configurable delay.
-- `"off"` — disables the gate entirely (break-glass; see Section 3).
+如果你发现的问题出在 **Hermes Agent 内核**（`agent/`、`tools/`、`gateway/` 等目录的原始逻辑），而不是本项目的修改部分，正确的去处是上游：
 
-### Output Redaction
-`agent/redact.py` strips secret-like patterns (API keys, tokens, credentials) from all display output before it reaches the terminal or gateway platform. This prevents accidental credential leakage in chat logs, tool previews, and response text. Redaction operates on the display layer only — underlying values remain intact for internal agent operations.
+```
+https://github.com/NousResearch/hermes-agent/security/advisories/new
+```
 
-### Skills vs. MCP Servers
-- **Installed Skills:** High trust. Equivalent to local host code; skills can read environment variables and run arbitrary commands.
-- **MCP Servers:** Lower trust. MCP subprocesses receive a filtered environment (`_build_safe_env()` in `tools/mcp_tool.py`) — only safe baseline variables (`PATH`, `HOME`, `XDG_*`) plus variables explicitly declared in the server's `env` config block are passed through. Host credentials are stripped by default. Additionally, packages invoked via `npx`/`uvx` are checked against the OSV malware database before spawning.
+判断方法：把我们的改动回退掉，问题是否依然存在？如果存在，那是上游的问题。
 
-### Code Execution Sandbox
-The `execute_code` tool (`tools/code_execution_tool.py`) runs LLM-generated Python scripts in a child process with API keys and tokens stripped from the environment to prevent credential exfiltration. Only environment variables explicitly declared by loaded skills (via `env_passthrough`) or by the user in `config.yaml` (`terminal.env_passthrough`) are passed through. The child accesses Hermes tools via RPC, not direct API calls.
+两边都报也没关系，我们不会介意。
 
-### Subagents
-- **No recursive delegation:** The `delegate_task` tool is disabled for child agents.
-- **Depth limit:** `MAX_DEPTH = 2` — parent (depth 0) can spawn a child (depth 1); grandchildren are rejected.
-- **Memory isolation:** Subagents run with `skip_memory=True` and do not have access to the parent's persistent memory provider. The parent receives only the task prompt and final response as an observation.
+## 部署加固建议
 
----
+这个项目会拿到 shell、读写文件、访问网络 —— **能力很强，误用风险也高**。上线前务必：
 
-## 3. Out of Scope (Non-Vulnerabilities)
+### 必做
 
-The following scenarios are **not** considered security breaches:
-- **Prompt Injection:** Unless it results in a concrete bypass of the approval system, toolset restrictions, or container sandbox.
-- **Public Exposure:** Deploying the gateway to the public internet without external authentication or network protection.
-- **Trusted State Access:** Reports that require pre-existing write access to `~/.hermes/`, `.env`, or `config.yaml` (these are operator-owned files).
-- **Default Behavior:** Host-level command execution when `terminal.backend` is set to `local` — this is the documented default, not a vulnerability.
-- **Configuration Trade-offs:** Intentional break-glass settings such as `approvals.mode: "off"` or `terminal.backend: local` in production.
-- **Tool-level read/access restrictions:** The agent has unrestricted shell access via the `terminal` tool by design. Reports that a specific tool (e.g., `read_file`) can access a resource are not vulnerabilities if the same access is available through `terminal`. Tool-level deny lists only constitute a meaningful security boundary when paired with equivalent restrictions on the terminal side (as with write operations, where `WRITE_DENIED_PATHS` is paired with the dangerous command approval system).
+| 项 | 说明 |
+|---|---|
+| **Dashboard 必须加认证** | 默认只监听 `127.0.0.1`；要对外必须 nginx Basic Auth 或 OAuth，且走 HTTPS |
+| **不要用 root 跑** | 建专用用户，只给它需要的目录权限 |
+| **密钥用环境变量** | 不要写进 `config.yaml` 或代码 |
+| **限制工具权限** | 不需要的能力在配置里关掉，别默认全开 |
+| **备份 `~/.hermes/`** | 里面有全部 profile、知识库、对话记录 |
 
----
+### 建议
 
-## 4. Deployment Hardening & Best Practices
+- 放在内网或加 IP 白名单
+- 开启操作日志审计
+- 定期更新依赖（`pip list --outdated`）
+- 生产环境和测试环境用不同的 API key，方便隔离成本与风险
 
-### Filesystem & Network
-- **Production sandboxing:** Use container backends (`docker`, `modal`, `daytona`) instead of `local` for untrusted workloads.
-- **File permissions:** Run as non-root (the Docker image uses UID 10000); protect credentials with `chmod 600 ~/.hermes/.env` on local installs.
-- **Network exposure:** Do not expose the gateway or API server to the public internet without VPN, Tailscale, or firewall protection. SSRF protection is enabled by default across all gateway platform adapters (Telegram, Discord, Slack, Matrix, Mattermost, etc.) with redirect validation. Note: the local terminal backend does not apply SSRF filtering, as it operates within the trusted operator's environment.
+### 明确不做防护的场景
 
-### Skills & Supply Chain
-- **Skill installation:** Review Skills Guard reports (`tools/skills_guard.py`) before installing third-party skills. The audit log at `~/.hermes/skills/.hub/audit.log` tracks every install and removal.
-- **MCP safety:** OSV malware checking runs automatically for `npx`/`uvx` packages before MCP server processes are spawned.
-- **CI/CD:** GitHub Actions are pinned to full commit SHAs. The `supply-chain-audit.yml` workflow blocks PRs containing `.pth` files or suspicious `base64`+`exec` patterns.
+以下场景**不要**直接暴露到公网：
 
-### Credential Storage
-- API keys and tokens belong exclusively in `~/.hermes/.env` — never in `config.yaml` or checked into version control.
-- The credential pool system (`agent/credential_pool.py`) handles key rotation and fallback. Credentials are resolved from environment variables, not stored in plaintext databases.
+- 未加认证的 Dashboard（`8091`、`3000` 等端口）
+- 未加认证的 Gateway HTTP 接口
+- 让智能体对不受信任的输入执行 `terminal` 工具
 
 ---
 
-## 5. Disclosure Process
+## 我们自己踩过的坑（供参考）
 
-- **Coordinated Disclosure:** 90-day window or until a fix is released, whichever comes first.
-- **Communication:** All updates occur via the GHSA thread or email correspondence with security@nousresearch.com.
-- **Credits:** Reporters are credited in release notes unless anonymity is requested.
+这些是实际部署中出过的问题，写出来是为了让别人少踩：
+
+**端口暴露**
+
+Dashboard 绑了 `0.0.0.0` 但没配 basic_auth 时会拒绝启动（这是上游的保护，别绕过它）。
+
+**凭据泄露**
+
+`.env` 曾经被误提交过。现在仓库有 `.gitignore` 拦着，但历史提交查不出来 —— **推之前先 `git status` 看一眼**。
+
+**跨机器部署**
+
+静态产物在构建时把路径写死了，直接整体覆盖到另一台机器会出现白屏。判断方法：资源文件头 20 字节如果是 `<!doctype`，说明返回的是 HTML 而不是 JS/CSS。
+
+---
+
+## 支持范围
+
+| 版本 | 支持 |
+|---|---|
+| 最新 release | ✅ |
+| 更早版本 | 仅接受关键漏洞报告，不保证修复 |
+
+上游安全策略保留在 [SECURITY.upstream.md](SECURITY.upstream.md)。
