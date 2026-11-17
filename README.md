@@ -4,6 +4,8 @@
 
 把大模型变成能真正干活的数字员工 —— 多个智能体各司其职、共享知识库、定时执行任务、通过企业微信 / 飞书 / 钉钉直接对话。整套系统跑在你自己的服务器上，数据不出内网。
 
+**开源内核在这里，官网在 [hermix.cn](https://hermix.cn)** —— 私有化部署、定制开发与技术支持。
+
 > 本项目基于 [Hermes Agent](https://github.com/NousResearch/hermes-agent)（MIT License，Copyright © 2025 Nous Research）二次开发。内核能力归功于上游项目，我们在其之上完成了中文场景适配、可视化控制台与多智能体编排。详见 [NOTICE](NOTICE)。
 
 ![和觅 Hermix 控制台总览](docs/screenshots/overview.png)
@@ -209,6 +211,19 @@ hermix/
 **我们不会把上游的东西说成自己的。** MIT 许可允许商业使用和再发布，但要求保留原版权声明 —— `LICENSE` 文件原样保留，修改说明见 `NOTICE`。
 
 上游原始说明保留在 [README.upstream.md](README.upstream.md)。
+
+---
+
+## 基于 Hermix 构建
+
+| 项目 | 说明 | 访问 |
+|---|---|---|
+| [hermix.cn](https://hermix.cn) | 产品官网、能力说明、在线试用 | 公开 |
+| [金陵奇缘](https://jinling.itspacex.cn) | 国潮 H5：人格测试 + 国风写真生成 | 公开 |
+| 政策通 | 多租户政策申报 SaaS（FastAPI + React） | 内部部署 |
+| AI 外呼 | 智能外呼坐席，接 DeepSeek 做实时对话 | 内部部署 |
+
+这些是团队基于本开源内核落地的业务系统。**核心商业代码不在本仓库**，这里只说明内核的实际承载能力 —— 它跑到过真实业务里，不是玩具。
 
 ---
 
