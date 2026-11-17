@@ -6,6 +6,8 @@
 
 > 本项目基于 [Hermes Agent](https://github.com/NousResearch/hermes-agent)（MIT License，Copyright © 2025 Nous Research）二次开发。内核能力归功于上游项目，我们在其之上完成了中文场景适配、可视化控制台与多智能体编排。详见 [NOTICE](NOTICE)。
 
+![和觅 Hermix 控制台总览](docs/screenshots/overview.png)
+
 ---
 
 ## 它解决什么问题
@@ -50,6 +52,10 @@
 - **技能管理** — 查看、启用、编辑技能
 - **费用统计** — 按模型 / 按智能体统计消耗
 
+| 智能体管理 | 技能系统 |
+|---|---|
+| ![智能体管理](docs/screenshots/agents.png) | ![技能管理](docs/screenshots/skills.png) |
+
 ### 技能系统（Skills）
 
 智能体的可复用能力包。一个技能就是一个 `SKILL.md` + 可选脚本：
@@ -71,6 +77,14 @@ skills/
 ### 多消息通道
 
 企业微信、飞书、钉钉、Telegram、邮件 —— 同一套智能体，多个入口。
+
+### 运行监控
+
+系统负载、磁盘水位、服务健康一屏可见。服务器拓扑只画真实节点 —— 演示数据不进图。
+
+| 定时任务 | 系统监控 |
+|---|---|
+| ![定时任务](docs/screenshots/cron.png) | ![系统监控](docs/screenshots/monitor.png) |
 
 ---
 
