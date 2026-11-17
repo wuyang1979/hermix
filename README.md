@@ -6,6 +6,10 @@
 
 > 本项目基于 [Hermes Agent](https://github.com/NousResearch/hermes-agent)（MIT License，Copyright © 2025 Nous Research）二次开发。内核能力归功于上游项目，我们在其之上完成了中文场景适配、可视化控制台与多智能体编排。详见 [NOTICE](NOTICE)。
 
+![和觅 Hermix 控制台总览](docs/screenshots/overview.png)
+
+*控制台总览 —— 系统资源、Agent 一览、服务器拓扑一屏看全*
+
 ---
 
 ## 它解决什么问题
@@ -49,6 +53,10 @@
 - **定时任务** — Cron 可视化管理，执行记录可追溯
 - **技能管理** — 查看、启用、编辑技能
 - **费用统计** — 按模型 / 按智能体统计消耗
+
+| 智能体管理 | 知识库 |
+|---|---|
+| ![智能体管理](docs/screenshots/agents.png) | ![知识库](docs/screenshots/knowledge.png) |
 
 ### 技能系统（Skills）
 
